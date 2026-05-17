@@ -41,7 +41,31 @@ fun AppNavigation() {
         }
         composable("cart") {
             CartScreen(
-                onNavigateBack = { navController.navigateUp() }
+                onNavigateBack = { navController.navigateUp() },
+                // Add this new parameter for checkout navigation
+                onNavigateToCheckout = { navController.navigate("checkout") }
+            )
+        }
+
+        composable("checkout") {
+            CheckoutScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToSuccess = {
+                    // Navigate to success and pop everything off the backstack so they can't hit "back" to go to a paid checkout
+                    navController.navigate("success") {
+                        popUpTo("home") { inclusive = false }
+                    }
+                }
+            )
+        }
+
+        composable("success") {
+            OrderSuccessScreen(
+                onNavigateHome = {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
             )
         }
     }

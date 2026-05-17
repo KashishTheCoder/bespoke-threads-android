@@ -20,6 +20,7 @@ import com.kashish_kirti.bespokethreads.data.repository.CartManager
 @Composable
 fun CartScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToCheckout: () -> Unit, // ADD THIS
     modifier: Modifier = Modifier
 ) {
     // Observing the global cart state
@@ -52,7 +53,7 @@ fun CartScreen(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        Button(onClick = { /* TODO: Checkout logic */ }) {
+                        Button(onClick = onNavigateToCheckout) {
                             Text("Checkout")
                         }
                     }

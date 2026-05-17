@@ -16,6 +16,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kashish_kirti.bespokethreads.ui.viewmodels.ProductDetailViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,25 +51,66 @@ fun ProductDetailScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(contentPadding = PaddingValues(16.dp)) {
-                Button(
-                    onClick = {
-                        product?.let { currentProduct ->
-                            com.kashish_kirti.bespokethreads.data.repository.CartManager.addToCart(
-                                product = currentProduct,
-                                notes = ""
+            product?.let { currentProduct ->
+                var quantity by remember { mutableIntStateOf(1) } // Local state for stepper
+
+                BottomAppBar(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier.height(80.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        // Quantity Counter Stepper
+                        Row(
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { if (quantity > 1) quantity-- },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Text("-", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            Text(
+                                text = quantity.toString(),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 4.dp)
                             )
-                            // 3. Launch the Snackbar message
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Added to cart successfully!")
+
+                            OutlinedButton(
+                                onClick = { quantity++ },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Text("+", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                             }
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    // 4. Change the button text
-                    Text("Add to Cart", modifier = Modifier.padding(8.dp))
+
+                        // Add to Cart Button
+                        Button(
+                            onClick = {
+                                com.kashish_kirti.bespokethreads.data.repository.CartManager.addToCart(
+                                    product = currentProduct,
+                                    quantity = quantity,
+                                    notes = ""
+                                )
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Added $quantity item(s) to cart successfully!")
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Add to Cart")
+                        }
+                    }
                 }
             }
         }

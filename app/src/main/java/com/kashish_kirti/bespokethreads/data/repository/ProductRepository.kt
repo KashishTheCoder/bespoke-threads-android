@@ -45,4 +45,7 @@ class ProductRepository {
             )
         )
     }
+    fun getProductById(id: String): Product? {
+        return getProducts().find { it.id == id }
+    }
 }

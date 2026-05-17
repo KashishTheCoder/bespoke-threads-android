@@ -17,8 +17,10 @@ fun AppNavigation() {
         composable("home") {
             HomeScreen(
                 onNavigateToProduct = { productId ->
-                    // This triggers the navigation and passes the ID in the URL-like route
                     navController.navigate("product_detail/$productId")
+                },
+                onNavigateToCart = {
+                    navController.navigate("cart")
                 }
             )
         }
@@ -33,6 +35,11 @@ fun AppNavigation() {
 
             ProductDetailScreen(
                 productId = productId,
+                onNavigateBack = { navController.navigateUp() }
+            )
+        }
+        composable("cart") {
+            CartScreen(
                 onNavigateBack = { navController.navigateUp() }
             )
         }

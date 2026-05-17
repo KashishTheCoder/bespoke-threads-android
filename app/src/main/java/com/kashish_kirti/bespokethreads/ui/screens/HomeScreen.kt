@@ -14,13 +14,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kashish_kirti.bespokethreads.ui.components.ProductCard
 import com.kashish_kirti.bespokethreads.ui.viewmodels.HomeViewModel
+import androidx.compose.material.icons.filled.ShoppingCart
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateToProduct: (String) -> Unit,
+    onNavigateToCart: () -> Unit, // ADD THIS
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel() // Injecting the ViewModel
+    viewModel: HomeViewModel = viewModel()
 ) {
     // Collecting the state from the ViewModel
     val products by viewModel.products.collectAsState()
@@ -28,11 +30,14 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = "Bespoke Threads",
-                        fontWeight = FontWeight.Bold
-                    )
+                title = { Text("Bespoke Threads", fontWeight = FontWeight.Bold) },
+                actions = { // ADD THIS BLOCK
+                    IconButton(onClick = onNavigateToCart) {
+                        Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Default.ShoppingCart,
+                            contentDescription = "Cart"
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,

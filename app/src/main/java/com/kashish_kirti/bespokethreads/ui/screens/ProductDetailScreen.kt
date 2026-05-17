@@ -55,7 +55,15 @@ fun ProductDetailScreen(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 Button(
-                    onClick = { /* TODO: Implement Cart/Order logic */ },
+                    onClick = {
+                        // FIX: We use the top-level 'product' variable here
+                        product?.let { currentProduct ->
+                            com.kashish_kirti.bespokethreads.data.repository.CartManager.addToCart(
+                                product = currentProduct,
+                                notes = "Standard measurements"
+                            )
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 ) {

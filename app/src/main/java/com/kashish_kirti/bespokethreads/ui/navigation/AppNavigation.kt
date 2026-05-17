@@ -9,6 +9,8 @@ import androidx.navigation.navArgument
 import com.kashish_kirti.bespokethreads.ui.screens.HomeScreen
 import com.kashish_kirti.bespokethreads.ui.screens.ProductDetailScreen
 import com.kashish_kirti.bespokethreads.ui.screens.CartScreen
+import com.kashish_kirti.bespokethreads.ui.screens.CheckoutScreen
+import com.kashish_kirti.bespokethreads.ui.screens.OrderSuccessScreen
 
 @Composable
 fun AppNavigation() {

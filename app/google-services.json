@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "819135123333",
+    "project_id": "bespoke-threads",
+    "storage_bucket": "bespoke-threads.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819135123333:android:0b892c3c7eeb06bd86beec",
+        "android_client_info": {
+          "package_name": "com.kashish_kirti.bespokethreads"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhdQqQ3_nvOaqTsSuHhsLoKeaJduk3QrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

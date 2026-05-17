@@ -7,18 +7,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kashish_kirti.bespokethreads.ui.viewmodels.ProductDetailViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,14 +25,19 @@ fun ProductDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductDetailViewModel = viewModel()
 ) {
-    // Tell the ViewModel to load the data as soon as this screen opens
     LaunchedEffect(productId) {
         viewModel.loadProduct(productId)
     }
 
     val product by viewModel.product.collectAsState()
 
+    // 1. Add state variables for the Snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
+        // 2. Attach the SnackbarHost to the Scaffold
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Details") },
@@ -43,36 +45,33 @@ fun ProductDetailScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+                }
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.background,
-                contentPadding = PaddingValues(16.dp)
-            ) {
+            BottomAppBar(contentPadding = PaddingValues(16.dp)) {
                 Button(
                     onClick = {
-                        // FIX: We use the top-level 'product' variable here
                         product?.let { currentProduct ->
                             com.kashish_kirti.bespokethreads.data.repository.CartManager.addToCart(
                                 product = currentProduct,
-                                notes = "Standard measurements"
+                                notes = ""
                             )
+                            // 3. Launch the Snackbar message
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Added to cart successfully!")
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Request Custom Order", modifier = Modifier.padding(8.dp))
+                    // 4. Change the button text
+                    Text("Add to Cart", modifier = Modifier.padding(8.dp))
                 }
             }
         }
     ) { paddingValues ->
-        // If the product is loaded, show the UI. Otherwise, you could show a loading spinner here.
         product?.let { item ->
             Column(
                 modifier = modifier
@@ -106,38 +105,14 @@ fun ProductDetailScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
+                    Text(text = item.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "Crafted by ${item.artisanName}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-
+                    Text(text = "Crafted by ${item.artisanName}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Description",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-
+                    Text(text = "Description", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = item.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text(text = item.description, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

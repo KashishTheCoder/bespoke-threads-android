@@ -53,7 +53,8 @@ fun HomeScreen(
                             placeholder = { Text("Search products, categories...") },
                             singleLine = true,
                             colors = TextFieldDefaults.colors(
-                                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                                focusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+                                unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent
                             ),
                             trailingIcon = {
                                 IconButton(onClick = {

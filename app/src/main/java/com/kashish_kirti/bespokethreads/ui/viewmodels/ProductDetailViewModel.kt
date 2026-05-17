@@ -6,6 +6,8 @@ import com.kashish_kirti.bespokethreads.domain.models.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class ProductDetailViewModel : ViewModel() {
 
@@ -15,6 +17,8 @@ class ProductDetailViewModel : ViewModel() {
     val product: StateFlow<Product?> = _product.asStateFlow()
 
     fun loadProduct(productId: String) {
-        _product.value = repository.getProductById(productId)
+        viewModelScope.launch {
+            _product.value = repository.getProductById(productId)
+        }
     }
 }

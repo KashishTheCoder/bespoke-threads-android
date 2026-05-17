@@ -6,6 +6,8 @@ import com.kashish_kirti.bespokethreads.domain.models.Product
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
@@ -21,7 +23,8 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun loadProducts() {
-        // Fetching our dummy data
-        _products.value = repository.getProducts()
+        viewModelScope.launch {
+            _products.value = repository.getProducts()
+        }
     }
 }

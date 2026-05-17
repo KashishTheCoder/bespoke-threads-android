@@ -1,51 +1,57 @@
 package com.kashish_kirti.bespokethreads.data.repository
 
+import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
 import com.kashish_kirti.bespokethreads.domain.models.Product
+import kotlinx.coroutines.tasks.await
 
 class ProductRepository {
 
-    // Simulating fetching a list of products from a server
-    fun getProducts(): List<Product> {
-        return listOf(
-            Product(
-                id = "1",
-                title = "Hand-Embroidered Denim Jacket",
-                description = "Custom vintage denim with floral back embroidery.",
-                price = 4500.0,
-                artisanName = "Kirti Kour",
-                category = "Jackets",
-                imageUrl = "https://picsum.photos/seed/jacket/400/400"
-            ),
-            Product(
-                id = "2",
-                title = "Bespoke Linen Kurta",
-                description = "Breathable summer linen tailored to your exact measurements.",
-                price = 2800.0,
-                artisanName = "Kashish Basreja",
-                category = "Traditional",
-                imageUrl = "https://picsum.photos/seed/kurta/400/400"
-            ),
-            Product(
-                id = "3",
-                title = "Crochet Winter Beanie",
-                description = "Chunky yarn handmade beanie. Available in custom colors.",
-                price = 1200.0,
-                artisanName = "Your Wish Crochet",
-                category = "Accessories",
-                imageUrl = "https://picsum.photos/seed/beanie/400/400"
-            ),
-            Product(
-                id = "4",
-                title = "Tailored Silk Blouse",
-                description = "Elegant pure silk blouse with custom sleeve lengths.",
-                price = 3500.0,
-                artisanName = "Thread & Needle Co.",
-                category = "Tops",
-                imageUrl = "https://picsum.photos/seed/blouse/400/400"
-            )
-        )
+    // Initialize Firestore
+    private val db = FirebaseFirestore.getInstance()
+    private val productsCollection = db.collection("products")
+
+    // Suspend function because network calls take time
+    suspend fun getProducts(): List<Product> {
+        return try {
+            val snapshot = productsCollection.get().await()
+            snapshot.documents.mapNotNull { document ->
+                // Manually mapping the document data to our Product data class
+                Product(
+                    id = document.id, // Using the Firestore Document ID
+                    title = document.getString("title") ?: "",
+                    description = document.getString("description") ?: "",
+                    price = document.getDouble("price") ?: 0.0,
+                    artisanName = document.getString("artisanName") ?: "Unknown Artisan",
+                    category = document.getString("category") ?: "Uncategorized",
+                    imageUrl = document.getString("imageUrl") ?: "https://picsum.photos/400/400"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("ProductRepository", "Error fetching products", e)
+            emptyList() // Return empty list if network fails
+        }
     }
-    fun getProductById(id: String): Product? {
-        return getProducts().find { it.id == id }
+
+    suspend fun getProductById(id: String): Product? {
+        return try {
+            val document = productsCollection.document(id).get().await()
+            if (document.exists()) {
+                Product(
+                    id = document.id,
+                    title = document.getString("title") ?: "",
+                    description = document.getString("description") ?: "",
+                    price = document.getDouble("price") ?: 0.0,
+                    artisanName = document.getString("artisanName") ?: "Unknown Artisan",
+                    category = document.getString("category") ?: "Uncategorized",
+                    imageUrl = document.getString("imageUrl") ?: "https://picsum.photos/400/400"
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("ProductRepository", "Error fetching product details", e)
+            null
+        }
     }
 }
